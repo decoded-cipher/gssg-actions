@@ -39,14 +39,12 @@ jobs:
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v2
-        with:
-          target_branch: gh-pages
-          folder: public
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          artifact_name: public
+          name: public
+          path: public/
 
       - name: Deploy to GitHub Pages
         id: deployment
