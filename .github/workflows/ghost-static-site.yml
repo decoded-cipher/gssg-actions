@@ -1,0 +1,55 @@
+name: Ghost Blog Static Site Generation and Deployment
+
+on:
+  # Trigger workflow manually
+  workflow_dispatch:
+
+  # Trigger daily at midnight UTC
+  # schedule:
+  #   - cron: '0 0 * * *'
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Ghost CLI and Ghost Static Site Generator
+        run: |
+          npm install -g ghost-cli ghost-static-site-generator
+
+      - name: Configure Ghost Blog URL
+        run: |
+          echo "GHOST_URL=https://blog.inovuslabs.org" >> $GITHUB_ENV
+          echo "OUTPUT_DIRECTORY=./public" >> $GITHUB_ENV
+
+      - name: Generate Static Site
+        run: |
+          ghost-static-site-generator ${{ env.GHOST_URL }} ${{ env.OUTPUT_DIRECTORY }}
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ env.OUTPUT_DIRECTORY }}
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
