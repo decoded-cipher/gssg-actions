@@ -22,6 +22,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Install wget
+        run: sudo apt-get install wget
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
@@ -31,11 +34,8 @@ jobs:
         run: npm install -g ghost-static-site-generator
 
       - name: Run ghost-static-site-generator
-        run: ghost-static-site-generator https://blog.inovuslabs.org ./public
+        run: sggs --domin "https://blog.inovuslabs.org" --url "https://blog.inovuslabs.org" ./public
         shell: /usr/bin/bash -e {0}
-        env:
-          GHOST_URL: https://blog.inovuslabs.org
-          OUTPUT_DIRECTORY: ./public
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v4
